@@ -1,0 +1,58 @@
+name: Talent Academy Demo
+on: [ push ]    # List on one line
+jobs:
+  terraform-deployment:
+    runs-on: ubuntu-latest
+    steps: # The list of steps to take for executionnn
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Clone your code in the pipeline
+        uses: actions/checkout@v2
+
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v1
+        #make sure u comment out the following lines of code
+
+      - name: Init
+        id: init
+        run: terraform init
+
+      # - name: Plan
+      #   id: plan
+      #   run: terraform plan 
+      #   continue-on-error: true
+
+      # - name: Apply
+      #   id: apply
+      #   run: terraform apply --auto-approve
+      #   continue-on-error: true
+
+      # - name: Write terraform output to inventory.hosts file
+      #   id: write output
+      #   run: terraform output | cut -d'"' -f 2 >> inventory.hosts 
+      #   continue-on-error: true
+
+      # - name: Build inventory.hosts file
+      #   id: build inventory file
+      #   run: echo "[webserver:vars]" >> inventory.hosts 
+      #   continue-on-error: true
+
+      # - name: Continue building inventory.hosts file 
+      #   id: continue inventory file
+      #   run: echo 'ansible_user = "ubuntu"' >> inventory.hosts 
+      #   continue-on-error: true
+
+      # - name: Continue2 building inventory.hosts file 
+      #   id: continue2 inventory file
+      #   run: echo 'ansible_ssh_private_key_file = "~/.ssh/ta-lab-key.pem"' >> inventory.hosts 
+      #   continue-on-error: true
+
+      # - name: Run playbook to configure nginx 
+      #   id: run playbook
+      #   run: ansible-playbook playbook.yml 
+      #   continue-on-error: true
