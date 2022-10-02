@@ -9,7 +9,7 @@ resource "aws_security_group" "my_app_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["86.15.241.215/32"]
+    cidr_blocks = ["${var.my_ip}/32"]
   }
 
   ingress {
@@ -17,7 +17,7 @@ resource "aws_security_group" "my_app_sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["86.15.241.215/32"]
+    cidr_blocks = ["${var.my_ip}/32"]
   }
 
    ingress {
@@ -25,7 +25,7 @@ resource "aws_security_group" "my_app_sg" {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["${var.vpc_cidr}"]
   }
 
    ingress {
@@ -107,6 +107,33 @@ resource "aws_key_pair" "ec2_keypair" {
 resource "local_file" "ssh_key" {
   filename = "${aws_key_pair.ec2_keypair.key_name}.pem"
   content = tls_private_key.example.private_key_pem
+}
+
+# Creating an Elastic IP called jenkins_eip
+resource "aws_eip" "jenkins_eip" {
+   # Attaching it to the jenkins_server EC2 instance
+   instance = aws_instance.my_public_server.id
+
+   # Making sure it is inside the VPC
+   vpc      = true
+
+   # Setting the tag Name to jenkins_eip
+   tags = {
+      Name = "jenkins_eip"
+   }
+}
+
+resource "aws_eip" "jenkins_slave_eip" {
+   # Attaching it to the jenkins_server EC2 instance
+   instance = aws_instance.my_slave_server.id
+
+   # Making sure it is inside the VPC
+   vpc      = true
+
+   # Setting the tag Name to jenkins_eip
+   tags = {
+      Name = "jenkins_slave_eip"
+   }
 }
 
 # EC2 - PUBLIC
