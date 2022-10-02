@@ -55,3 +55,24 @@ variable "keypair_name" {
   type        = string
 }
 
+
+variable "user_arn" {
+  default ="arn:aws:iam::314045000409:user/chrisOGB"
+}
+
+variable key_spec {
+  default = "SYMMETRIC_DEFAULT"
+}
+
+variable enabled {
+  default = true
+}
+
+variable rotation_enabled {
+  default = true
+}
+
+variable kms_alias {
+  default = "CWLogKey"
+}
+

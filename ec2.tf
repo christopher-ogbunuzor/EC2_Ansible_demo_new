@@ -20,12 +20,36 @@ resource "aws_security_group" "my_app_sg" {
     cidr_blocks = ["86.15.241.215/32"]
   }
 
+   ingress {
+    description = "for jenkins from vpc"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]
+  }
+
+   ingress {
+    description = "for jenkins from github 1"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["140.82.112.0/20"]
+  }
+
+    ingress {
+    description = "for jenkins from github 2"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["192.30.252.0/22"]
+  }
+
   ingress {
     description = "SSH from my VPC"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["192.168.0.0/16"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   ingress {
@@ -98,5 +122,22 @@ resource "aws_instance" "my_public_server" {
 
     tags = {
     Name = "Jenkins Server"
+  }
+}
+
+resource "aws_instance" "my_slave_server" {
+    ami = data.aws_ami.my_aws_ami.id
+    instance_type = var.instance_type
+    key_name = aws_key_pair.ec2_keypair.key_name
+    subnet_id = module.network.public_subnet_a_id
+    vpc_security_group_ids = [ aws_security_group.my_app_sg.id ]
+
+    iam_instance_profile = "${aws_iam_instance_profile.ec2_instanceprofile.name}"
+
+    user_data = "${file("nodeinstall.sh")}"
+
+
+    tags = {
+    Name = "slave Server"
   }
 }
